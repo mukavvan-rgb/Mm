@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon, PlusIcon, DownloadIcon, UploadIcon } from './Icons';
+import { SunIcon, MoonIcon, PlusIcon, UploadIcon, InstallIcon, ActionsIcon } from './Icons';
 import { Button } from './ui/Button';
 import { t } from '../utils/i18n';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface HeaderProps {
   onAddTrade: () => void;
@@ -13,6 +13,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onAddTrade, onExport, onImport }) => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
+  const { canInstall, triggerInstallPrompt } = usePWAInstall();
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -25,16 +26,17 @@ export const Header: React.FC<HeaderProps> = ({ onAddTrade, onExport, onImport }
     }
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = (theme: 'light' | 'dark') => {
     const root = window.document.documentElement;
-    if (isDarkMode) {
-      localStorage.theme = 'light';
-      root.classList.remove('dark');
-    } else {
+    if (theme === 'dark') {
       localStorage.theme = 'dark';
       root.classList.add('dark');
+      setIsDarkMode(true);
+    } else {
+      localStorage.theme = 'light';
+      root.classList.remove('dark');
+      setIsDarkMode(false);
     }
-    setIsDarkMode(!isDarkMode);
   };
   
   const handleExportClick = (format: 'csv' | 'xlsx') => {
@@ -52,14 +54,50 @@ export const Header: React.FC<HeaderProps> = ({ onAddTrade, onExport, onImport }
             </h1>
           </div>
           <div className="flex items-center space-x-2 md:space-x-3">
+             {canInstall && (
+                <>
+                    {/* Mobile Button */}
+                    <button
+                        onClick={triggerInstallPrompt}
+                        className="p-2 rounded-full text-secondary-text-light dark:text-secondary-text hover:bg-gray-200 dark:hover:bg-gray-700 sm:hidden"
+                        aria-label={t('installApp')}
+                    >
+                        <InstallIcon className="w-5 h-5" />
+                    </button>
+                    {/* Desktop Button */}
+                    <Button variant="secondary" onClick={triggerInstallPrompt} className="hidden sm:inline-flex">
+                        <InstallIcon className="w-4 h-4 me-2" />
+                        {t('installApp')}
+                    </Button>
+                </>
+            )}
+            
+             {/* Mobile Import Button */}
+             <button
+                onClick={onImport}
+                className="p-2 rounded-full text-secondary-text-light dark:text-secondary-text hover:bg-gray-200 dark:hover:bg-gray-700 sm:hidden"
+                aria-label={t('import')}
+            >
+                <UploadIcon className="w-5 h-5" />
+            </button>
+             {/* Desktop Import Button */}
              <Button variant="secondary" onClick={onImport} className="hidden sm:inline-flex">
-                <UploadIcon className="w-4 h-4 ms-2" />
+                <UploadIcon className="w-4 h-4 me-2" />
                 {t('import')}
              </Button>
 
              <div className="relative">
-                <Button variant="secondary" onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}>
-                    <DownloadIcon className="w-4 h-4 sm:ms-2" />
+                {/* Mobile Actions/Export Button */}
+                <button
+                    onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
+                    className="p-2 rounded-full text-secondary-text-light dark:text-secondary-text hover:bg-gray-200 dark:hover:bg-gray-700 sm:hidden"
+                    aria-label={t('export')}
+                >
+                    <ActionsIcon className="w-5 h-5" />
+                </button>
+                {/* Desktop Actions/Export Button */}
+                <Button variant="secondary" onClick={() => setIsExportMenuOpen(!isExportMenuOpen)} className="hidden sm:inline-flex">
+                    <ActionsIcon className="w-4 h-4 me-2" />
                     <span className="hidden sm:inline">{t('export')}</span>
                 </Button>
                 {isExportMenuOpen && (
@@ -78,16 +116,26 @@ export const Header: React.FC<HeaderProps> = ({ onAddTrade, onExport, onImport }
              </div>
 
             <Button onClick={onAddTrade} className="hidden sm:flex">
-              <PlusIcon className="w-4 h-4 ms-2" />
+              <PlusIcon className="w-4 h-4 me-2" />
               {t('addTrade')}
             </Button>
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-secondary-text-light dark:text-secondary-text hover:bg-gray-200 dark:hover:bg-gray-700"
-              aria-label="Toggle theme"
-            >
-              {isDarkMode ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
-            </button>
+            
+            <div className="flex items-center p-1 rounded-full bg-background-light dark:bg-background border border-border-light dark:border-border">
+                <button
+                    onClick={() => toggleTheme('light')}
+                    className={`p-1.5 rounded-full transition-colors ${!isDarkMode ? 'bg-accent text-white' : 'text-secondary-text-light dark:text-secondary-text hover:bg-gray-200 dark:hover:bg-gray-700/50'}`}
+                    aria-label={t('switchToLightTheme')}
+                >
+                    <SunIcon className="w-4 h-4" />
+                </button>
+                <button
+                    onClick={() => toggleTheme('dark')}
+                    className={`p-1.5 rounded-full transition-colors ${isDarkMode ? 'bg-accent text-white' : 'text-secondary-text-light dark:text-secondary-text hover:bg-gray-200 dark:hover:bg-gray-700/50'}`}
+                    aria-label={t('switchToDarkTheme')}
+                >
+                    <MoonIcon className="w-4 h-4" />
+                </button>
+            </div>
           </div>
         </div>
       </div>

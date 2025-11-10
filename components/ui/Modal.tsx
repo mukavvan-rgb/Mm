@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -7,9 +6,10 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer }) => {
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -18,9 +18,11 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
     };
     if (isOpen) {
       document.addEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'hidden';
     }
     return () => {
       document.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen, onClose]);
 
@@ -38,8 +40,8 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
         onClick={onClose}
         aria-hidden="true"
       ></div>
-      <div className="relative bg-card-light dark:bg-card rounded-lg shadow-xl w-full max-w-lg m-4 border border-border-light dark:border-border">
-        <div className="flex items-center justify-between p-4 border-b border-border-light dark:border-border">
+      <div className="relative bg-card-light dark:bg-card rounded-lg shadow-xl w-full max-w-lg m-4 border border-border-light dark:border-border flex flex-col max-h-[90vh]">
+        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-border-light dark:border-border">
           <h2 id="modal-title" className="text-lg font-bold text-primary-text-light dark:text-primary-text">
             {title}
           </h2>
@@ -53,9 +55,14 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
             </svg>
           </button>
         </div>
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto">
           {children}
         </div>
+        {footer && (
+            <div className="flex-shrink-0 p-4 border-t border-border-light dark:border-border">
+                {footer}
+            </div>
+        )}
       </div>
     </div>,
     document.body

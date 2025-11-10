@@ -14,6 +14,8 @@ export interface Trade {
   notes: string;
   date: string; // ISO 8601 format
   status: TradeStatus;
+  marketCapAtEntry?: number;
+  targetMarketCap?: number;
   // This data is fetched from the API and is not stored in the DB
   livePrice?: number;
   pnl?: number;
@@ -79,6 +81,7 @@ export interface DexScreenerPairInfo {
     pairAddress: string;
     baseTokenName: string;
     baseTokenAddress: string;
+    fdv?: number;
 }
 
 export interface DexScreenerApiResponse {

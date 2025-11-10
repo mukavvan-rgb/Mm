@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { Trade } from '../types';
 import { TradeStatus } from '../types';
@@ -28,10 +27,25 @@ const PnlTag: React.FC<{ pnl?: number; pnlPercent?: number }> = ({ pnl, pnlPerce
     );
 };
 
+const formatMarketCap = (value: number | undefined): string => {
+    if (value === undefined || value === null) return 'N/A';
+    if (value >= 1_000_000_000) {
+        return `$${(value / 1_000_000_000).toFixed(2)}B`;
+    }
+    if (value >= 1_000_000) {
+        return `$${(value / 1_000_000).toFixed(2)}M`;
+    }
+    if (value >= 1_000) {
+        return `$${(value / 1_000).toFixed(2)}K`;
+    }
+    return `$${value.toFixed(2)}`;
+};
+
 export const TradeCard: React.FC<TradeCardProps> = ({ trade, isSelected, onToggleSelect, onEdit, onDelete }) => {
     const { 
         id, status, pairInfo, entryPrice, stopLoss, targetPrice, 
-        livePrice, pnl, pnlPercent, date, notes, quantity
+        livePrice, pnl, pnlPercent, date, notes, quantity,
+        marketCapAtEntry, targetMarketCap
     } = trade;
 
     const getStatusInfo = () => {
@@ -81,31 +95,56 @@ export const TradeCard: React.FC<TradeCardProps> = ({ trade, isSelected, onToggl
                     <div className={`px-3 py-1 text-xs font-bold text-white rounded-full ${statusInfo.color}`}>{statusInfo.text}</div>
                 </div>
 
-                <div className="mt-4 space-y-2 text-sm">
-                    <div className="flex justify-between">
+                <div className="mt-4 space-y-3 text-sm">
+                     <div className="flex justify-between">
                         <span className="text-secondary-text-light dark:text-secondary-text">{t('pnl')}</span>
                         {status === TradeStatus.OPEN 
                             ? <PnlTag pnl={pnl} pnlPercent={pnlPercent} />
                             : <span className="font-semibold">{pnl !== undefined ? `${pnl.toFixed(2)} USD` : 'N/A'}</span>
                         }
                     </div>
-                    <div className="flex justify-between">
-                        <span className="text-secondary-text-light dark:text-secondary-text">{t('livePrice')}</span>
-                        <span className="font-semibold">{livePrice !== undefined ? `$${livePrice}` : 'N/A'}</span>
+
+                    <div className="border-t border-border-light/50 dark:border-border/50 pt-2 space-y-1">
+                        <div className="flex justify-between">
+                            <span className="text-secondary-text-light dark:text-secondary-text">{t('livePrice')}</span>
+                            <span className="font-semibold">{livePrice !== undefined ? `$${livePrice}` : 'N/A'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-secondary-text-light dark:text-secondary-text">{t('entryCost')}</span>
+                            <span className="font-semibold">${entryPrice} / ${costBasis.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-positive">
+                            <span className="text-secondary-text-light dark:text-secondary-text">{t('target')}</span>
+                            <span className="font-semibold">${targetPrice}</span>
+                        </div>
+                        <div className="flex justify-between text-negative">
+                            <span className="text-secondary-text-light dark:text-secondary-text">{t('stopLoss')}</span>
+                            <span className="font-semibold">${stopLoss}</span>
+                        </div>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="text-secondary-text-light dark:text-secondary-text">{t('entryCost')}</span>
-                        <span className="font-semibold">${entryPrice} / ${costBasis.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-positive">
-                        <span className="text-secondary-text-light dark:text-secondary-text">{t('target')}</span>
-                        <span className="font-semibold">${targetPrice}</span>
-                    </div>
-                    <div className="flex justify-between text-negative">
-                        <span className="text-secondary-text-light dark:text-secondary-text">{t('stopLoss')}</span>
-                        <span className="font-semibold">${stopLoss}</span>
-                    </div>
+
+                    {(pairInfo?.fdv || marketCapAtEntry || targetMarketCap) && (
+                        <div className="border-t border-border-light/50 dark:border-border/50 pt-2 space-y-1">
+                            <div className="flex justify-between">
+                                <span className="text-secondary-text-light dark:text-secondary-text">{t('liveMcap')}</span>
+                                <span className="font-semibold">{formatMarketCap(pairInfo?.fdv)}</span>
+                            </div>
+                            {marketCapAtEntry && (
+                               <div className="flex justify-between">
+                                    <span className="text-secondary-text-light dark:text-secondary-text">{t('entryMcap')}</span>
+                                    <span className="font-semibold">{formatMarketCap(marketCapAtEntry)}</span>
+                                </div>
+                            )}
+                            {targetMarketCap && (
+                                <div className="flex justify-between text-positive">
+                                    <span className="text-secondary-text-light dark:text-secondary-text">{t('targetMcap')}</span>
+                                    <span className="font-semibold">{formatMarketCap(targetMarketCap)}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
+
 
                 {notes && (
                     <div className="mt-4">

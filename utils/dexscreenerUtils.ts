@@ -38,5 +38,6 @@ export const getBestPair = (pairs: DexScreenerApiResponse['pairs']): DexScreener
         pairAddress: best.pairAddress,
         baseTokenName: best.baseToken.name,
         baseTokenAddress: best.baseToken.address,
+        fdv: best.fdv,
     };
 };
