@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whales Street Trade Tracker</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0D1117" />
+    
+    <script>
+      // Custom Tailwind theme configuration
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'Cairo', 'sans-serif'],
+              arabic: ['Cairo', 'sans-serif'],
+            },
+            colors: {
+              background: '#0D1117',
+              'background-light': '#FFFFFF',
+              'card': '#161B22',
+              'card-light': '#F3F4F6',
+              'border': '#30363D',
+              'border-light': '#E5E7EB',
+              'accent': '#00D1FF',
+              'primary-text': '#C9D1D9',
+              'primary-text-light': '#1F2937',
+              'secondary-text': '#8B949E',
+              'secondary-text-light': '#6B7280',
+              'positive': '#22C55E',
+              'negative': '#EF4444',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', 'Cairo', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0",
+    "idb": "https://aistudiocdn.com/idb@^8.0.3",
+    "recharts": "https://aistudiocdn.com/recharts@^3.4.1",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "xlsx": "https://aistudiocdn.com/xlsx@^0.18.5"
+  }
+}
+</script>
+</head>
+  <body class="bg-background-light dark:bg-background text-primary-text-light dark:text-primary-text">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

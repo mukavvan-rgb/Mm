@@ -1,0 +1,5 @@
+{
+  "name": "Whales Street Trade Tracker",
+  "description": "An advanced Progressive Web App to track cryptocurrency trades, analyze performance, and fetch real-time price data from Dexscreener. Features offline support, P&L calculations, and data export.",
+  "requestFramePermissions": []
+}
