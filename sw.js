@@ -1,11 +1,14 @@
 
-const CACHE_NAME = 'tracker-cache-v1';
+const CACHE_NAME = 'tracker-cache-v2';
 const DEX_API_HOSTNAME = 'api.dexscreener.com';
 
 // Assets to precache
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
+  '/manifest.json',
+  '/vite.svg',
+  '/index.tsx',
 ];
 
 // Install event: precache core assets
@@ -59,17 +62,35 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Strategy for static assets: Cache-first, then network
+  // Strategy for other assets: Cache-first, then network, with SPA fallback
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).then(networkResponse => {
-        // Optional: cache newly fetched static assets
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseToCache);
+      // If found in cache, return it.
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      // If not in cache, fetch from the network.
+      return fetch(event.request)
+        .then((networkResponse) => {
+          // Cache the new response for future use.
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          return networkResponse;
+        })
+        .catch(() => {
+          // If network request fails (e.g., offline),
+          // check if it's a navigation request.
+          if (event.request.mode === 'navigate') {
+            // Fallback to the main index.html page for SPA routing.
+            return caches.match('/index.html');
+          }
+          // For other failed requests (scripts, styles, images),
+          // let the browser handle the error.
+          return;
         });
-        return networkResponse;
-      });
     })
   );
 });
